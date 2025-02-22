@@ -1,6 +1,6 @@
 
 /*
- * *** YOUR NAME GOES HERE / YOUR SECTION NUMBER ***
+ * *** Keiron Coolen COMP 272 Section 001 ***
  *
  * This java file is a Java object implementing simple AVL Tree.
  * You are to complete the deleteElement method.
@@ -361,7 +361,71 @@ class LUC_AVLTree {
          * code for each. You can also look at the method InsertElement, as it has do
          * do many of the same things as this method.
          */
-
+         if (node == null) {
+            return null;
+        }
+        /*
+            Scenario 1: 
+            Traverse through the tree 
+            - Go left if the value is smaller than the node value
+            - Go right if the value is bigger than the node value
+            The node that is to be deleted is found
+         */
+        if (value < node.value) {
+            node.leftChild = deleteElement(value, node.leftChild);
+        } else if (value > node.value) {
+            node.rightChild = deleteElement(value, node.rightChild);
+        } else {
+            // Scenario 2: The node has no left subtree
+            if (node.leftChild == null) {
+                return node.rightChild;
+            // Scenario 3: The node has no right subtree
+            } else if (node.rightChild == null) {
+                return node.leftChild;
+            } else {
+            /*
+                Scenario 4: The node has two children
+                The successor node is found using the minValueNode method
+                The node value is changed to the value of that of the successor node
+                The successor node is deleted
+             */ 
+                Node successor = minValueNode(node.rightChild);
+                node.value = successor.value;
+                node.rightChild = deleteElement(successor.value, node.rightChild);
+            }
+        }
+    
+        /*
+           The height of the current node is calculated and updated
+           The balance factor is obtained to check if there is a need to rebalance
+        */
+        node.height = (getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild))) + 1;
+        int balance = getBalanceFactor(node);
+        /*
+           If the balance factor is greater than 1 and the node is left heavy,
+           The following rotations are applied
+        */
+        if (balance > 1) {
+            if (getBalanceFactor(node.leftChild) >= 0) {
+                // LL(Left-Left) method is applied
+                return LLRotation(node);
+            } else {
+                // LR(Left-Right) method is applied
+                return LRRotation(node);
+            }
+        /*
+            If the balance factor is less than 1, the node is right heavy,
+            The following rotations are then applied
+        */
+        } else if (balance < -1) {
+            if (getBalanceFactor(node.rightChild) <= 0) {
+                // RR(Right-Right) method is applied
+                return RRRotation(node);
+            } else {
+                // RL(Right-Left) method is applied
+                return RLRotation(node);
+            }
+        }
         return node;
     }
 
